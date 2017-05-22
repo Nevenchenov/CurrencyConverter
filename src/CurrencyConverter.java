@@ -2,6 +2,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Locale;
 
 public class CurrencyConverter {
 	// The next arr filling I'd prefer to be replaced with keyboard entry or load from DB (site)
@@ -11,6 +12,8 @@ public class CurrencyConverter {
 	private static float[] asks = {125.43f, 1.2545f, 14.2843f, 16.8543f, 1.3754f, 15.8543f, 0.6794f};
 
 	public static void main(String[] args) throws IOException {
+        Locale locale = new Locale("en");
+        Locale.setDefault(locale);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String userInput;
 
@@ -104,24 +107,43 @@ public class CurrencyConverter {
 		float targetSum = 0f;
 		// extract sum and source&target currencies
 		String[] userStringSplitted = request.split(" ");
-		Float userSum = Float.parseFloat(userStringSplitted[0]);
+		String userSumString = userStringSplitted[0];
 		String userCurrency = userStringSplitted[1];
 		String targetCurrency = userStringSplitted[2];
 		
-		// finding coefficient
-		for(int i = 0; i < countOfCurrencyPairs; i++){
-			String[] splitted = currenciesPairs[i].split("/");
-			if(splitted[0].equals(userCurrency)&&splitted[1].equals(targetCurrency)){
-				targetSum = userSum*bids[i];
-				break;
+		if(!isNumberCorrect(userSumString)){
+			System.out.println("Your sum is incorrect. Input proper value (only digits and dot):");
+		} else {
+			Float userSum = Float.parseFloat(userSumString);
+			for(int i = 0; i < countOfCurrencyPairs; i++){
+				String[] splitted = currenciesPairs[i].split("/");
+				if(splitted[0].equals(userCurrency)&&splitted[1].equals(targetCurrency)){
+					targetSum = userSum*bids[i];
+					break;
+				}
+				if(splitted[0].equals(targetCurrency)&&splitted[1].equals(userCurrency)){
+					targetSum = userSum/asks[i];
+					break;
+				}
 			}
-			if(splitted[0].equals(targetCurrency)&&splitted[1].equals(userCurrency)){
-				targetSum = userSum/asks[i];
-				break;
+		
+			if(targetSum==0f){
+				System.out.println("Sorry, Your request is impossible. Try another pair exactly from list above:");
+			} else{
+			System.out.println(" ");
+			System.out.println(userSumString + " " + userCurrency + "   ->   " + String.format("%(.2f", targetSum) + " " + targetCurrency);
+			//                 ^String.format("%(.2f", userSum)
+			System.out.println(" ");
 			}
+			targetSum = 0f;
 		}
-		System.out.println(" ");
-		System.out.println(String.format("%(.2f", userSum) + " " + userCurrency + "   ->   " + String.format("%(.2f", targetSum) + " " + targetCurrency);
-		System.out.println(" ");
+	}
+	
+	private static boolean isNumberCorrect(String numberString){
+		boolean is = false;
+		if(numberString.matches("\\d+\\.\\d+")||numberString.matches("\\d+")){
+			is = true;
+		}
+		return is;
 	}
 }
