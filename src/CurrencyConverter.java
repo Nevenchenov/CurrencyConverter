@@ -26,12 +26,17 @@ public class CurrencyConverter {
 			userInput = reader.readLine();
 			if(!userInput.equals("")){
 				convert(userInput);
+				System.out.println("Input next or press \"Enter\" to finish converting:");
+
 			}
 			else{
 				System.out.println("Are You really shure?");
-				System.out.println("Press  \"Enter\" to exit or any symbol to continue  work:");
+				System.out.println("Press \"Enter\" to exit or any symbol to continue  work:");
 				userInput = reader.readLine();
-				if(userInput.equals(""))break;
+				if(userInput.equals("")){
+					System.out.println("Good luck! Welcome for the future conversion!");
+					break;
+				}
 				else continue;
 			}
 			}
@@ -96,10 +101,27 @@ public class CurrencyConverter {
 */
 	
 	private static void convert(String request){
-	String[] userStringSplitted = request.split(" ");
-	Float userSum = Float.parseFloat(userStringSplitted[0]);
-	String userCurrency = userStringSplitted[1];
-	String targetCurrency = userStringSplitted[2];
-	System.out.println("You want " + userSum + " " + userCurrency + " to be converted to " + targetCurrency);
+		float targetSum = 0f;
+		// extract sum and source&target currencies
+		String[] userStringSplitted = request.split(" ");
+		Float userSum = Float.parseFloat(userStringSplitted[0]);
+		String userCurrency = userStringSplitted[1];
+		String targetCurrency = userStringSplitted[2];
+		
+		// finding coefficient
+		for(int i = 0; i < countOfCurrencyPairs; i++){
+			String[] splitted = currenciesPairs[i].split("/");
+			if(splitted[0].equals(userCurrency)&&splitted[1].equals(targetCurrency)){
+				targetSum = userSum*bids[i];
+				break;
+			}
+			if(splitted[0].equals(targetCurrency)&&splitted[1].equals(userCurrency)){
+				targetSum = userSum/asks[i];
+				break;
+			}
+		}
+		System.out.println(" ");
+		System.out.println(String.format("%(.2f", userSum) + " " + userCurrency + "   ->   " + String.format("%(.2f", targetSum) + " " + targetCurrency);
+		System.out.println(" ");
 	}
 }
