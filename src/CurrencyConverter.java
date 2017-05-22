@@ -107,35 +107,39 @@ public class CurrencyConverter {
 		float targetSum = 0f;
 		// extract sum and source&target currencies
 		String[] userStringSplitted = request.split(" ");
-		String userSumString = userStringSplitted[0];
-		String userCurrency = userStringSplitted[1];
-		String targetCurrency = userStringSplitted[2];
-		
-		if(!isNumberCorrect(userSumString)){
-			System.out.println("Your sum is incorrect. Input proper value (only digits and dot):");
+		if(userStringSplitted.length == 3){
+			String userSumString = userStringSplitted[0];
+			String userCurrency = userStringSplitted[1];
+			String targetCurrency = userStringSplitted[2];
+			
+			if(!isNumberCorrect(userSumString)){
+				System.out.println("Your sum is incorrect. Input proper value (only digits and dot):");
+			} else {
+				Float userSum = Float.parseFloat(userSumString);
+				for(int i = 0; i < countOfCurrencyPairs; i++){
+					String[] splitted = currenciesPairs[i].split("/");
+					if(splitted[0].equals(userCurrency)&&splitted[1].equals(targetCurrency)){
+						targetSum = userSum*bids[i];
+						break;
+					}
+					if(splitted[0].equals(targetCurrency)&&splitted[1].equals(userCurrency)){
+						targetSum = userSum/asks[i];
+						break;
+					}
+				}
+			
+				if(targetSum==0f){
+					System.out.println("Sorry, Your request is impossible. Try another pair exactly from list above:");
+				} else{
+				System.out.println(" ");
+				System.out.println(userSumString + " " + userCurrency + "   ->   " + String.format("%(.2f", targetSum) + " " + targetCurrency);
+				//                 ^String.format("%(.2f", userSum)
+				System.out.println(" ");
+				}
+				targetSum = 0f;
+			}
 		} else {
-			Float userSum = Float.parseFloat(userSumString);
-			for(int i = 0; i < countOfCurrencyPairs; i++){
-				String[] splitted = currenciesPairs[i].split("/");
-				if(splitted[0].equals(userCurrency)&&splitted[1].equals(targetCurrency)){
-					targetSum = userSum*bids[i];
-					break;
-				}
-				if(splitted[0].equals(targetCurrency)&&splitted[1].equals(userCurrency)){
-					targetSum = userSum/asks[i];
-					break;
-				}
-			}
-		
-			if(targetSum==0f){
-				System.out.println("Sorry, Your request is impossible. Try another pair exactly from list above:");
-			} else{
-			System.out.println(" ");
-			System.out.println(userSumString + " " + userCurrency + "   ->   " + String.format("%(.2f", targetSum) + " " + targetCurrency);
-			//                 ^String.format("%(.2f", userSum)
-			System.out.println(" ");
-			}
-			targetSum = 0f;
+			System.out.println("Your entry is incorrect! Input correct data, please:");
 		}
 	}
 	
